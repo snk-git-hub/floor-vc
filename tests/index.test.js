@@ -63,11 +63,10 @@ test(`Signin fails if the username and password are incorrect`,async()=>{
 
   })
 });
-
-
 describe("User metadata endpoint",()=>{
    let token = "";
    let avatharId="";
+///////////////////MAIN TEST ////////////////////////////////////
 
    beforeAll(async ()=>{
       const username = `snk-${Math.random()}`
@@ -93,6 +92,8 @@ describe("User metadata endpoint",()=>{
       avatharId= avatharResponse.avatharId;
 
    })
+/////////////////////////TEST 1////////////////////////////////
+
   test("User can't update their metadata with a wrong avatar id",async()=>{
    const response = await axios.post(`${BACKEND_URL}/api/v1/user/metadata`,{
       avatharId:"123123123"
@@ -103,6 +104,8 @@ describe("User metadata endpoint",()=>{
    })
    expect(response.statusCode).toBe(400);
   })
+/////////////////////////TEST 2////////////////////////////////
+
    test("User can update their metadata with the right avathar id",async()=>{
          const response = await axios.post(`${BACKEND_URL}/api/v1/user/metadat`,{
             avatharId
@@ -113,6 +116,8 @@ describe("User metadata endpoint",()=>{
          })
          test(response.statusCode).toBe(200)
    })
+/////////////////////////TEST 3////////////////////////////////
+
    test("User is not able to update their metadata if the auth head",async()=>{
       const response= await axios.post(`${BACKEND_URL}/api/v1/user/metadata`,{
          avatharId
@@ -124,11 +129,12 @@ describe("User metadata endpoint",()=>{
       expect(response.statusCode).toBe(403)
    })
 })
-
 describe("User avathar information ",()=>{
    let avatharId;
    let token;
    let userId;
+///////////////////MAIN TEST ////////////////////////////////////
+
      beforeAll(async ()=>{
       const username = `snk-${Math.random()}`
       const password = "123456"
@@ -154,6 +160,7 @@ describe("User avathar information ",()=>{
       avatharId= avatharResponse.avatharId;
 
    })
+/////////////////////////TEST 1////////////////////////////////
 
    test("Get back avathar information for a user",async()=>{
      const response=await axios.get(`${BACKEND_URL}/api/v1/user/metadata/bulk?ids=[${userId}]`)
@@ -161,6 +168,8 @@ describe("User avathar information ",()=>{
     expect( response.data.avathars[0].userId).toBe(userId);
 
    })
+/////////////////////////TEST 2////////////////////////////////
+
    test("Available avatars lists the recently created avatar",async()=>{
       const response = await axios.post(`${BACKEND_URL}/api/v1/avathars`);
       expect(response.data.avatars.length).not.toBe(0);
