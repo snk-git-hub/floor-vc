@@ -65,7 +65,7 @@ test(`Signin fails if the username and password are incorrect`,async()=>{
 });
 
 
-describe("User Information endpoint",()=>{
+describe("User metadata endpoint",()=>{
    let token = "";
    let avatharId="";
 
@@ -113,5 +113,59 @@ describe("User Information endpoint",()=>{
          })
          test(response.statusCode).toBe(200)
    })
+   test("User is not able to update their metadata if the auth head",async()=>{
+      const response= await axios.post(`${BACKEND_URL}/api/v1/user/metadata`,{
+         avatharId
+      },{
+         headers:{
+            "authorization":`Bearer ${token}`
+         }
+      })
+      expect(response.statusCode).toBe(403)
+   })
 })
 
+describe("User avathar information ",()=>{
+   let avatharId;
+   let token;
+   let userId;
+     beforeAll(async ()=>{
+      const username = `snk-${Math.random()}`
+      const password = "123456"
+   const signupResponse=await axios.post(`${BACKEND_URL}/api/v1/signup`,{
+         username,
+         password,
+         type:"admin"
+      })
+
+     userId = signupResponse.data.userId;
+   const response =await axios.post(`${BACKEND_URL}/api/v1/signin`,{
+         username,
+         password,
+      })
+
+      token = response.data.token
+
+
+      const avatharResponse = await axios.post(`${BACKEND_URL}/api/v1/avatar`,{
+         "imageUrl":"https://pin.it/3orGVA49C",
+         "name":"Timmy"
+      })
+      avatharId= avatharResponse.avatharId;
+
+   })
+
+   test("Get back avathar information for a user",async()=>{
+     const response=await axios.get(`${BACKEND_URL}/api/v1/user/metadata/bulk?ids=[${userId}]`)
+    expect( response.data.avathars.length).toBe(1);
+    expect( response.data.avathars[0].userId).toBe(userId);
+
+   })
+   test("Available avatars lists the recently created avatar",async()=>{
+      const response = await axios.post(`${BACKEND_URL}/api/v1/avathars`);
+      expect(response.data.avatars.length).not.toBe(0);
+      const currentAvathar =  response.data.avatars.find(x=>x.id==avatharId);
+      expect(currentAvathar).toBeDefined()
+   })
+
+})
